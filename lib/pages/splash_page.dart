@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 
+// packages
+import 'package:firebase_core/firebase_core.dart';
+
 class SplashPage extends StatefulWidget {
   final VoidCallback onInitializationCompelete;
 
@@ -16,6 +19,13 @@ class _SplashPageState extends State<SplashPage> {
   @override
   void initState() {
     super.initState();
+    _setup().then((_) {
+      widget.onInitializationCompelete();
+    }).catchError(
+      (e) {
+        debugPrint('Initialization failed: $e');
+      },
+    );
   }
 
   @override
@@ -44,4 +54,16 @@ class _SplashPageState extends State<SplashPage> {
       ),
     );
   }
+
+  Future<void> _setup() async {
+    try {
+      WidgetsFlutterBinding.ensureInitialized();
+      await Firebase.initializeApp();
+      _registerServices();
+    } catch (e) {
+      debugPrint('Error initializing Firebase: $e');
+    }
+  }
+
+  void _registerServices() {}
 }
